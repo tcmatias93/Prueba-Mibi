@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 class Server {
   constructor(options) {
@@ -9,6 +10,8 @@ class Server {
   }
 
   async start() {
+    //Cors
+    this.app.use(cors());
     //Midelware
     this.app.use(express.json());
 

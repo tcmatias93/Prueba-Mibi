@@ -2,42 +2,56 @@ import { useEffect, useState } from "react";
 
 import "./App.css";
 import List from "./component/List";
+import { getTareas } from "./core/tareas/get-tarea.actions";
+import { deleteTarea } from "./core/tareas/delete-tarea.actions";
+import { crearTarea } from "./core/tareas/create-tarea.actions";
+import { updateTarea } from "./core/tareas/update-tarea.actions";
 
 function App() {
   const [tareas, setTareas] = useState([]);
   const [tareaCreada, setTareaCreada] = useState("");
   const [tareaId, setTareaId] = useState(null);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const fetchTareas = async () => {
+      const data = await getTareas();
+      setTareas(data);
+    };
+    fetchTareas();
+  }, []);
 
-  const crearTarea = (e) => {
+  const crearTareas = async (e) => {
     e.preventDefault();
 
     if (!tareaCreada) {
       return alert("Se necesita agregar una tarea");
     }
 
-    if (tareaId !== null) {
-      setTareas(
-        tareas.map((tarea) =>
-          tarea.id === tareaId ? { ...tarea, text: tareaCreada } : tarea
-        )
-      );
-      setTareaId(null);
-    } else {
-      const newTarea = {
-        id: Date.now(),
-        text: tareaCreada,
-      };
-
-      setTareas([...tareas, newTarea]);
+    try {
+      if (tareaId) {
+        const response = await updateTarea(tareaId, tareaCreada);
+        const data = await getTareas();
+        setTareas(data);
+        setTareaCreada("");
+      } else {
+        const response = await crearTarea(tareaCreada);
+        const data = await getTareas();
+        setTareas(data);
+        setTareaCreada("");
+      }
+    } catch (error) {
+      alert(`algo salio mal: ${error}`);
     }
-
-    setTareaCreada("");
   };
 
-  const eliminarTarea = (id) => {
-    setTareas(tareas.filter((tarea) => tarea.id !== id));
+  const eliminarTarea = async (id) => {
+    try {
+      const response = await deleteTarea(id);
+      const data = await getTareas();
+      setTareas(data);
+    } catch (error) {
+      alert(`algo salio mal: ${error}`);
+    }
   };
 
   const editarTarea = (id) => {
@@ -49,7 +63,7 @@ function App() {
   return (
     <>
       <h1>Crear nueva tarea</h1>
-      <form onSubmit={crearTarea}>
+      <form onSubmit={crearTareas}>
         <label htmlFor="">Crear nueva tarea</label>
         <input
           type="text"

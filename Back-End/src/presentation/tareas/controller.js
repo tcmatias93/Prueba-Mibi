@@ -49,7 +49,6 @@ class TareaController {
   //Eliminar tarea
   deleteTareas = async (req, res) => {
     const id = +req.params.id;
-    console.log({ id });
 
     const tareaEliminada = await prisma.tarea.delete({
       where: {

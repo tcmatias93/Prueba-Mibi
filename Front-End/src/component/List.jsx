@@ -1,7 +1,6 @@
 import React from "react";
 
 const List = ({ tareas, editarTarea, eliminarTarea }) => {
-  console.log(tareas);
   return (
     <ul>
       {tareas.map((tarea) => (
